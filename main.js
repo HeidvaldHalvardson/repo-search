@@ -46,6 +46,6 @@ const getRepos = async (request) => {
 const debounceGetRepos = debounce(getRepos, 1000)
 
 
-searchField.addEventListener('keyup', () => {
+searchField.addEventListener('input', () => {
   debounceGetRepos(searchField.value)
 })
