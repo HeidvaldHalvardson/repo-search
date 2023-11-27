@@ -2,6 +2,7 @@
 const searchField = document.querySelector("#search")
 const cardTmpl = document.querySelector('#card')
 const field = document.querySelector('.output-field')
+const autocomplete = document.querySelector('#autocomplete')
 
 const debounce = (fn, debounceTime) => {
   let timer
@@ -13,32 +14,44 @@ const debounce = (fn, debounceTime) => {
   }
 };
 
+const addCard = (item) => {
+  const card = cardTmpl.content.cloneNode(true)
+  card.querySelector('.card-name').textContent = `Name: ${item.name}`
+  card.querySelector('.card-owner').textContent = `Owner: ${item.owner.login}`
+  card.querySelector('.card-stars').textContent = `Stars: ${item.stargazers_count}`
+  card.querySelector('.card-button').addEventListener('click', (evt) => {
+    evt.target.parentNode.remove()
+  })
+  field.append(card)
+  searchField.value = ''
+  autocomplete.innerHTML = ''
+}
+
 const getRepos = async (request) => {
     return await fetch(`https://api.github.com/search/repositories?q=${request}`, {
     headers: {
       'X-GitHub-Api-Version': '2022-11-28',
-      "Authorization": "Bearer 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"
     }
   })
       .then(response => {
         if (response.ok) {
           response.json().then(repos => {
+            autocomplete.innerHTML = ''
             const items = repos.items.slice(0, 5)
             if (items.length === 0) {
-              field.innerHTML = '<p class="no-results">No results...</p>'
+              autocomplete.innerHTML = '<p class="no-results">No results...</p>'
             } else {
-              field.innerHTML = ''
               items.forEach(item => {
-                const card = cardTmpl.content.cloneNode(true)
-                card.querySelector('.card-name').textContent = `Name: ${item.name}`
-                card.querySelector('.card-owner').textContent = `Owner: ${item.owner.login}`
-                card.querySelector('.card-stars').textContent = `Stars: ${item.stargazers_count}`
-                field.append(card)
+                const choice = document.createElement('p')
+                choice.className = 'choice'
+                choice.textContent = `${item.name}`
+                choice.addEventListener('click', () => addCard(item))
+                autocomplete.append(choice)
               })
             }
           })
         } else {
-          field.innerHTML = '<p class="no-results">No results...</p>'
+          autocomplete.innerHTML = '<p class="no-results">Try again...</p>'
         }
       })
 }
