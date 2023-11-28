@@ -63,5 +63,5 @@ searchField.addEventListener('input', () => {
   if (searchField.value[0] === ' ') {
     return
   }
-  debounceGetRepos(searchField.value)
+  debounceGetRepos(searchField.value.trim())
 })
