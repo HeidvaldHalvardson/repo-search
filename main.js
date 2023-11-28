@@ -60,5 +60,8 @@ const debounceGetRepos = debounce(getRepos, 1000)
 
 
 searchField.addEventListener('input', () => {
+  if (searchField.value[0] === ' ') {
+    return
+  }
   debounceGetRepos(searchField.value)
 })
